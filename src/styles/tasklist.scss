@@ -80,10 +80,14 @@ section.task-list {
           align-items: center;
           gap: 14px;
           outline: 0;
+          overflow: hidden;
 
           p {
             font-size: 1rem;
             color: var(--text);
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
           }
 
           &.completed {
