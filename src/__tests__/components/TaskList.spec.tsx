@@ -1,11 +1,43 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { TaskList } from '../../components/TaskList';
 
 describe('App Page', () => {
+  beforeAll(() => {
+    Object.defineProperty(window, "matchMedia", {
+      writable: true,
+      value: jest.fn().mockImplementation(query => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: jest.fn(), // Deprecated
+        removeListener: jest.fn(), // Deprecated
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+      }))
+    });
+  });
+
+  it('should not be able to add a task with a empty title', () => {
+    render(<TaskList />);
+    const addTaskButton = screen.getByTestId('add-task-button');
+    fireEvent.click(addTaskButton);
+    expect(screen.queryByTestId('task')).not.toBeInTheDocument();
+    const taskInput = screen.getByPlaceholderText('Adicionar novo todo');
+
+    fireEvent.change(taskInput, {
+      target: {
+        value: 'ReactJS é uma delícia!'
+      }
+    });
+    
+    fireEvent.click(addTaskButton);
+    const addedFirstTaskTitle = screen.getByText('ReactJS é uma delícia!');
+    expect(addedFirstTaskTitle).toHaveTextContent('ReactJS é uma delícia!');
+  })
+
   it('should be able to add a task', async () => {
     render(<TaskList />);
-
     const taskInput = screen.getByPlaceholderText('Adicionar novo todo');
     const addTaskButton = screen.getByTestId('add-task-button');
 
@@ -17,50 +49,23 @@ describe('App Page', () => {
     fireEvent.click(addTaskButton);
 
     const addedFirstTaskTitle = screen.getByText('Beba agua diariamente');
-
     expect(addedFirstTaskTitle).toHaveTextContent('Beba agua diariamente');
     expect(addedFirstTaskTitle.parentElement).not.toHaveClass('completed')
 
     fireEvent.change(taskInput, {
       target: {
-        value: 'Páre de tomar coca-cola'
+        value: 'Pare de tomar coca-cola'
       }
     });
+
     fireEvent.click(addTaskButton);
-
-    const addedSecondTaskTitle = screen.getByText('Páre de tomar coca-cola');
-
+    const addedSecondTaskTitle = screen.getByText('Pare de tomar coca-cola');
     expect(addedFirstTaskTitle).toBeInTheDocument();
     expect(addedFirstTaskTitle).toHaveTextContent('Beba agua diariamente');
     expect(addedFirstTaskTitle.parentElement).not.toHaveClass('completed')
-
-    expect(addedSecondTaskTitle).toHaveTextContent('Páre de tomar coca-cola');
+    expect(addedSecondTaskTitle).toHaveTextContent('Pare de tomar coca-cola');
     expect(addedSecondTaskTitle.parentElement).not.toHaveClass('completed')
-  })
-
-  it('should not be able to add a task with a empty title', () => {
-    render(<TaskList />);
-
-    const addTaskButton = screen.getByTestId('add-task-button');
-
-    fireEvent.click(addTaskButton);
-
-    expect(screen.queryByTestId('task')).not.toBeInTheDocument();
-
-    const taskInput = screen.getByPlaceholderText('Adicionar novo todo');
-
-    fireEvent.change(taskInput, {
-      target: {
-        value: 'ReactJS é uma delícia!'
-      }
-    });
-    
-    fireEvent.click(addTaskButton);
-
-    const addedFirstTaskTitle = screen.getByText('ReactJS é uma delícia!');
-
-    expect(addedFirstTaskTitle).toHaveTextContent('ReactJS é uma delícia!');
-  })
+  });
 
   it('should be able to remove a task', async () => {
     render(<TaskList />);
@@ -70,31 +75,29 @@ describe('App Page', () => {
 
     fireEvent.change(taskInput, {
       target: {
-        value: 'ReactJS é uma delícia!'
+        value: 'Este item sera removido'
       }
     });
     fireEvent.click(addTaskButton);
 
     fireEvent.change(taskInput, {
       target: {
-        value: 'Páre de tomar coca-cola'
+        value: 'Este item NAO sera removido'
       }
     });
+
     fireEvent.click(addTaskButton);
-
-    const addedFirstTaskTitle = screen.getByText('ReactJS é uma delícia!');
-    const addedSecondTaskTitle = screen.getByText('Páre de tomar coca-cola');
-
-    expect(addedFirstTaskTitle).toBeInTheDocument()
-    expect(addedSecondTaskTitle).toBeInTheDocument();
-
-    const [addedFirstTaskRemoveButton] = screen.getAllByTestId('remove-task-button');
+  
+    const [addedFirstTaskRemoveButton, addedSecondTaskNotBeRemovedButton] = screen.getAllByTestId('remove-task-button');
 
     fireEvent.click(addedFirstTaskRemoveButton);
+    if (addedFirstTaskRemoveButton.firstChild) {
+      fireEvent.click(addedFirstTaskRemoveButton.firstChild)
+    }
 
-    expect(addedFirstTaskTitle).not.toBeInTheDocument();
-    expect(addedSecondTaskTitle).toBeInTheDocument();
-  })
+    expect(addedFirstTaskRemoveButton).not.toBeInTheDocument();
+    expect(addedSecondTaskNotBeRemovedButton).toBeInTheDocument();
+  });
 
   it('should be able to check a task', () => {
     render(<TaskList />);
@@ -111,7 +114,7 @@ describe('App Page', () => {
 
     fireEvent.change(taskInput, {
       target: {
-        value: 'Páre de tomar coca-cola'
+        value: 'Pare de tomar coca-cola'
       }
     });
     fireEvent.click(addTaskButton);
