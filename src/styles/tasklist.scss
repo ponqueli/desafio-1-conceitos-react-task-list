@@ -117,8 +117,8 @@ section.task-list {
           .checkbox-container {
             display: block;
             position: relative;
-            padding-left: 14px;
-            margin-bottom: 18px;
+            padding-left: 20px;
+            margin-bottom: 24px;
           
             input {
               position: absolute;
@@ -142,8 +142,8 @@ section.task-list {
               position: absolute;
               top: 0;
               left: 0;
-              width: 16px;
-              height: 16px;
+              width: 24px;
+              height: 24px;
               background-color: var(--background);
               border-radius: 2px;
           
@@ -151,10 +151,10 @@ section.task-list {
                 content: "";
                 position: absolute;
                 display: none;
-                left: 6px;
+                left: 10px;
                 top: 3px;
                 width: 3px;
-                height: 6px;
+                height: 10px;
                 border: solid white;
                 border-width: 0 2px 2px 0;
                 transform: rotate(45deg);
@@ -169,6 +169,8 @@ section.task-list {
 
           svg {
             color: var(--red);
+            width: 24px;
+            height: 24px;
           }
 
           &:hover {
@@ -184,7 +186,6 @@ section.task-list {
       font-size: 1.25rem;
       color: var(--text-light);
       text-align: center;
-      margin-top: 1rem;
 
       @media (max-width:  400px) {
         font-size: 1rem;
