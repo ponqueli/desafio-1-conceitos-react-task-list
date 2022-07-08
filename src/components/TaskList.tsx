@@ -94,8 +94,6 @@ export function TaskList() {
   return (
     <section className="task-list container">
       <header>
-        <h2>Minhas tasks</h2>
-
         <div className="input-group">
           <input 
             onKeyDown={e => e.key === 'Enter' && handleCreateNewTask()}
@@ -108,6 +106,7 @@ export function TaskList() {
             <FiCheckSquare size={16} color="#fff"/>
           </button>
         </div>
+        <h2>Minhas tasks</h2>
       </header>
 
       <main>
