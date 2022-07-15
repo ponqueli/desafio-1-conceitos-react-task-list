@@ -7,6 +7,7 @@ interface Task {
   id: number;
   title: string;
   isComplete: boolean;
+  createdAt: Date;
 }
 
 export function TaskList() {
@@ -50,7 +51,7 @@ export function TaskList() {
       const newTasks = tasksStored.map(task => task.id === newTask.id ? newTask : task);     
       localStorage.setItem(key, JSON.stringify(newTasks));
     }else{
-      tasksStored.push(newTask);
+      tasksStored.unshift(newTask);
       localStorage.setItem(key, JSON.stringify(tasksStored))
     }
   }
@@ -61,9 +62,10 @@ export function TaskList() {
       const newTask = {
         id: generateId(),
         title: newTaskTitle,
-        isComplete: false
+        isComplete: false,
+        createdAt: new Date()
       };
-      setTasks([...tasks, newTask]);
+      setTasks([newTask,...tasks]);
       saveTasks(key, newTask);
       setNewTaskTitle('');
       showSucessfullToast('Tarefa criada com sucesso!');
